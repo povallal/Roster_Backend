@@ -5,15 +5,15 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using rosterapi.Authentication;
+using rosterapi.Data;
 
 #nullable disable
 
 namespace rosterapi.Migrations
 {
-    [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20240119184637_AdminRegister")]
-    partial class AdminRegister
+    [DbContext(typeof(UserAuthDbContext))]
+    [Migration("20240207171235_userauth")]
+    partial class userauth
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -25,7 +25,7 @@ namespace rosterapi.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
-            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
+            modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole<string>", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -54,25 +54,25 @@ namespace rosterapi.Migrations
                     b.HasData(
                         new
                         {
-                            Id = "062ceeea-ca2f-4d1a-bd4d-f8ef22cc02ab",
+                            Id = "1",
                             Name = "Admin",
                             NormalizedName = "ADMIN"
                         },
                         new
                         {
-                            Id = "c7d93318-7de2-4aa9-af25-e569066ecd17",
+                            Id = "2",
                             Name = "ChiefConsultant",
                             NormalizedName = "CHIEFCONSULTANT"
                         },
                         new
                         {
-                            Id = "4ccc45c1-f7ae-4ee3-9eca-d68f98148e5f",
+                            Id = "3",
                             Name = "Consultant",
                             NormalizedName = "CONSULTANT"
                         },
                         new
                         {
-                            Id = "e3e544ce-f9fa-4b9d-90fd-b30c648bdf3d",
+                            Id = "4",
                             Name = "MedicalOfficer",
                             NormalizedName = "MEDICALOFFICER"
                         });
@@ -184,7 +184,53 @@ namespace rosterapi.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("rosterapi.Models.AdminRegisterModel", b =>
+            modelBuilder.Entity("rosterapi.Models.Group", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Groups");
+                });
+
+            modelBuilder.Entity("rosterapi.Models.Unit", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Units");
+                });
+
+            modelBuilder.Entity("rosterapi.Models.User", b =>
                 {
                     b.Property<string>("Id")
                         .HasColumnType("nvarchar(450)");
@@ -196,12 +242,21 @@ namespace rosterapi.Migrations
                         .IsConcurrencyToken()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Email")
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("datetimeoffset");
+
+                    b.Property<string>("Discriminator")
                         .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Email")
                         .HasMaxLength(256)
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<bool>("EmailConfirmed")
+                        .HasColumnType("bit");
+
+                    b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
                     b.Property<bool>("LockoutEnabled")
@@ -209,10 +264,6 @@ namespace rosterapi.Migrations
 
                     b.Property<DateTimeOffset?>("LockoutEnd")
                         .HasColumnType("datetimeoffset");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("NormalizedEmail")
                         .HasMaxLength(256)
@@ -223,7 +274,6 @@ namespace rosterapi.Migrations
                         .HasColumnType("nvarchar(256)");
 
                     b.Property<string>("PasswordHash")
-                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PhoneNumber")
@@ -237,6 +287,9 @@ namespace rosterapi.Migrations
 
                     b.Property<bool>("TwoFactorEnabled")
                         .HasColumnType("bit");
+
+                    b.Property<DateTimeOffset>("UpdatedAt")
+                        .HasColumnType("datetimeoffset");
 
                     b.Property<string>("UserName")
                         .HasMaxLength(256)
@@ -253,11 +306,75 @@ namespace rosterapi.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
+
+                    b.HasDiscriminator<string>("Discriminator").HasValue("User");
+
+                    b.UseTphMappingStrategy();
+                });
+
+            modelBuilder.Entity("rosterapi.Models.Admin", b =>
+                {
+                    b.HasBaseType("rosterapi.Models.User");
+
+                    b.HasDiscriminator().HasValue("Admin");
+                });
+
+            modelBuilder.Entity("rosterapi.Models.ChiefConsultant", b =>
+                {
+                    b.HasBaseType("rosterapi.Models.User");
+
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("UnitId");
+
+                    b.ToTable("AspNetUsers", t =>
+                        {
+                            t.Property("UnitId")
+                                .HasColumnName("ChiefConsultant_UnitId");
+                        });
+
+                    b.HasDiscriminator().HasValue("ChiefConsultant");
+                });
+
+            modelBuilder.Entity("rosterapi.Models.Consultant", b =>
+                {
+                    b.HasBaseType("rosterapi.Models.User");
+
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("UnitId");
+
+                    b.ToTable("AspNetUsers", t =>
+                        {
+                            t.Property("UnitId")
+                                .HasColumnName("Consultant_UnitId");
+                        });
+
+                    b.HasDiscriminator().HasValue("Consultant");
+                });
+
+            modelBuilder.Entity("rosterapi.Models.MedicalOfficer", b =>
+                {
+                    b.HasBaseType("rosterapi.Models.User");
+
+                    b.Property<int>("GroupId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("UnitId")
+                        .HasColumnType("int");
+
+                    b.HasIndex("GroupId");
+
+                    b.HasIndex("UnitId");
+
+                    b.HasDiscriminator().HasValue("MedicalOfficer");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<string>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -266,7 +383,7 @@ namespace rosterapi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
                 {
-                    b.HasOne("rosterapi.Models.AdminRegisterModel", null)
+                    b.HasOne("rosterapi.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -275,7 +392,7 @@ namespace rosterapi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
                 {
-                    b.HasOne("rosterapi.Models.AdminRegisterModel", null)
+                    b.HasOne("rosterapi.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -284,13 +401,13 @@ namespace rosterapi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
                 {
-                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
+                    b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole<string>", null)
                         .WithMany()
                         .HasForeignKey("RoleId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("rosterapi.Models.AdminRegisterModel", null)
+                    b.HasOne("rosterapi.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -299,11 +416,66 @@ namespace rosterapi.Migrations
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
                 {
-                    b.HasOne("rosterapi.Models.AdminRegisterModel", null)
+                    b.HasOne("rosterapi.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("rosterapi.Models.ChiefConsultant", b =>
+                {
+                    b.HasOne("rosterapi.Models.Unit", "Unit")
+                        .WithMany("ChiefConsultants")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("rosterapi.Models.Consultant", b =>
+                {
+                    b.HasOne("rosterapi.Models.Unit", "Unit")
+                        .WithMany("Consultants")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("rosterapi.Models.MedicalOfficer", b =>
+                {
+                    b.HasOne("rosterapi.Models.Group", "Group")
+                        .WithMany("MedicalOfficers")
+                        .HasForeignKey("GroupId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("rosterapi.Models.Unit", "Unit")
+                        .WithMany("MedicalOfficers")
+                        .HasForeignKey("UnitId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Group");
+
+                    b.Navigation("Unit");
+                });
+
+            modelBuilder.Entity("rosterapi.Models.Group", b =>
+                {
+                    b.Navigation("MedicalOfficers");
+                });
+
+            modelBuilder.Entity("rosterapi.Models.Unit", b =>
+                {
+                    b.Navigation("ChiefConsultants");
+
+                    b.Navigation("Consultants");
+
+                    b.Navigation("MedicalOfficers");
                 });
 #pragma warning restore 612, 618
         }

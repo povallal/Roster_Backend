@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace rosterapi.Migrations
 {
     /// <inheritdoc />
-    public partial class AdminRegister : Migration
+    public partial class userauth : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -28,29 +28,33 @@ namespace rosterapi.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "AspNetUsers",
+                name: "Groups",
                 columns: table => new
                 {
-                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: false),
-                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
-                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
-                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
-                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
-                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.PrimaryKey("PK_Groups", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Units",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Units", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -72,6 +76,63 @@ namespace rosterapi.Migrations
                         principalTable: "AspNetRoles",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "AspNetUsers",
+                columns: table => new
+                {
+                    Id = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
+                    IsActive = table.Column<bool>(type: "bit", nullable: false),
+                    Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    ChiefConsultant_UnitId = table.Column<int>(type: "int", nullable: true),
+                    Consultant_UnitId = table.Column<int>(type: "int", nullable: true),
+                    UnitId = table.Column<int>(type: "int", nullable: true),
+                    GroupId = table.Column<int>(type: "int", nullable: true),
+                    UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedUserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    Email = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    NormalizedEmail = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
+                    EmailConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    SecurityStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    ConcurrencyStamp = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    PhoneNumberConfirmed = table.Column<bool>(type: "bit", nullable: false),
+                    TwoFactorEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    LockoutEnd = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: true),
+                    LockoutEnabled = table.Column<bool>(type: "bit", nullable: false),
+                    AccessFailedCount = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Groups_GroupId",
+                        column: x => x.GroupId,
+                        principalTable: "Groups",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Units_ChiefConsultant_UnitId",
+                        column: x => x.ChiefConsultant_UnitId,
+                        principalTable: "Units",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Units_Consultant_UnitId",
+                        column: x => x.Consultant_UnitId,
+                        principalTable: "Units",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_AspNetUsers_Units_UnitId",
+                        column: x => x.UnitId,
+                        principalTable: "Units",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -164,10 +225,10 @@ namespace rosterapi.Migrations
                 columns: new[] { "Id", "ConcurrencyStamp", "Name", "NormalizedName" },
                 values: new object[,]
                 {
-                    { "062ceeea-ca2f-4d1a-bd4d-f8ef22cc02ab", null, "Admin", "ADMIN" },
-                    { "4ccc45c1-f7ae-4ee3-9eca-d68f98148e5f", null, "Consultant", "CONSULTANT" },
-                    { "c7d93318-7de2-4aa9-af25-e569066ecd17", null, "ChiefConsultant", "CHIEFCONSULTANT" },
-                    { "e3e544ce-f9fa-4b9d-90fd-b30c648bdf3d", null, "MedicalOfficer", "MEDICALOFFICER" }
+                    { "1", null, "Admin", "ADMIN" },
+                    { "2", null, "ChiefConsultant", "CHIEFCONSULTANT" },
+                    { "3", null, "Consultant", "CONSULTANT" },
+                    { "4", null, "MedicalOfficer", "MEDICALOFFICER" }
                 });
 
             migrationBuilder.CreateIndex(
@@ -203,6 +264,26 @@ namespace rosterapi.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_ChiefConsultant_UnitId",
+                table: "AspNetUsers",
+                column: "ChiefConsultant_UnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_Consultant_UnitId",
+                table: "AspNetUsers",
+                column: "Consultant_UnitId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_GroupId",
+                table: "AspNetUsers",
+                column: "GroupId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_AspNetUsers_UnitId",
+                table: "AspNetUsers",
+                column: "UnitId");
+
+            migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
                 table: "AspNetUsers",
                 column: "NormalizedUserName",
@@ -233,6 +314,12 @@ namespace rosterapi.Migrations
 
             migrationBuilder.DropTable(
                 name: "AspNetUsers");
+
+            migrationBuilder.DropTable(
+                name: "Groups");
+
+            migrationBuilder.DropTable(
+                name: "Units");
         }
     }
 }

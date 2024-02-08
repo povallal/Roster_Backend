@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json.Serialization;
 using Microsoft.Extensions.FileProviders;
-using rosterapi.Authentication;
+
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +13,12 @@ using System.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using rosterapi.Models;
 using Microsoft.OpenApi.Models;
+using rosterapi.Data;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.ApplicationModels;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -36,23 +42,22 @@ builder.Services.AddSwaggerGen(c =>
 {
     c.SwaggerDoc("v1", new OpenApiInfo { Title = "Your API", Version = "v1" });
 });
-
-builder.Services.AddLogging(builder =>
-{
-    builder.AddConsole();
-    builder.SetMinimumLevel(LogLevel.Information);
-});
-
 // Add Identity services
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
+builder.Services.AddDbContext<UserAuthDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("ConnStr")));
 
-builder.Services.AddIdentity<AdminRegisterModel, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();
+builder.Services.AddIdentity<User, IdentityRole<string>>(options =>
+{
+   
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequiredLength = 6;
+})
+.AddEntityFrameworkStores<UserAuthDbContext>()
+.AddDefaultTokenProviders();
 
-builder.Services.AddScoped<UserManager<AdminRegisterModel>>(provider => provider.GetService<UserManager<AdminRegisterModel>>());
-builder.Services.AddScoped<SignInManager<AdminRegisterModel>>(provider => provider.GetService<SignInManager<AdminRegisterModel>>());
+builder.Services.AddScoped<RoleManager<IdentityRole<string>>>();
 
 // Add JWT authentication
 builder.Services.AddAuthentication(options =>
@@ -69,11 +74,24 @@ builder.Services.AddAuthentication(options =>
     {
         ValidateIssuer = true,
         ValidateAudience = true,
-        ValidAudience = builder.Configuration["JWT:ValidAudience"],
-        ValidIssuer = builder.Configuration["JWT:ValidIssuer"],
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["JWT:Secret"]))
+        ValidateLifetime = true,
+        ValidateIssuerSigningKey = true,
+        ValidIssuer = builder.Configuration["Jwt:ValidIssuer"],
+        ValidAudience = builder.Configuration["Jwt:ValidAudience"],
+        IssuerSigningKey = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Secret"]))
     };
 });
+
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy("AdminPolicy", policy =>
+      policy.RequireRole("Admin"));
+
+
+});
+
+
 
 
 

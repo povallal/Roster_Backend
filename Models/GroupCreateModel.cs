@@ -3,15 +3,12 @@ using System.ComponentModel.DataAnnotations;
 
 namespace rosterapi.Models
 {
-	public class Sample
+	public class GroupCreateModel
 	{
-        [Key]
-        public int SampleId { get; set; }
-
         [Required]
         public string Name { get; set; }
 
-        public decimal Price { get; set; }
+       
     }
 }
 

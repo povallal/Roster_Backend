@@ -1,16 +1,20 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 
-using rosterapi.Authentication;
+
 namespace rosterapi.Models
 {
-	public class LoginModel
-	{
-        [Required(ErrorMessage = "User Name is required")]
-        public required string Username { get; set; }
+    public class LoginModel
+    {
+        [Required]
+        [EmailAddress]
+        public string Email { get; set; }
 
-        [Required(ErrorMessage = "Password is required")]
-        public required string Password { get; set; }
+        [Required]
+        [DataType(DataType.Password)]
+        public string Password { get; set; }
+
+       public bool RememberMe { get; set; }
     }
 }
 

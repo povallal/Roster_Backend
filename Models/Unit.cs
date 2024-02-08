@@ -2,34 +2,24 @@
 using System.ComponentModel.DataAnnotations;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using rosterapi.Models;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace rosterapi.Models
 {
-	public class Unit
-	{
-        [Key]
+    public class Unit
+    {
         public int Id { get; set; }
 
-        [Required]
-        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 2)]
         public string Name { get; set; }
+        public DateTimeOffset CreatedAt { get; set; }
+        public DateTimeOffset UpdatedAt { get; set; }
 
-        // Navigation property
-        public ICollection<ChiefConsultantRegistrationModel> ChiefConsultants { get; set; }
 
+        // Each Unit can have many ChiefConsultants, Consultants, and MedicalOfficers
+        public ICollection<ChiefConsultant> ChiefConsultants { get; set; }
+        public ICollection<Consultant> Consultants { get; set; }
+        public ICollection<MedicalOfficer> MedicalOfficers { get; set; }
 
-        // SelectList property for generating the dropdown options
-        public SelectList GetUnitSelectList()
-        {
-            var units = new List<Unit>
-            {
-                new Unit { Id = 1, Name = "Unit 1" },
-                new Unit { Id = 2, Name = "Unit 2" },
-                new Unit { Id = 3, Name = "Unit 3" }
-            };
-
-            return new SelectList(units, "Id", "Name");
-        }
     }
 }
 

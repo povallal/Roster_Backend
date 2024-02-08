@@ -32,4 +32,10 @@
     <PackageReference Include="Microsoft.Extensions.Configuration" Version="7.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Remove="Data\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Data\" />
+  </ItemGroup>
 </Project>
