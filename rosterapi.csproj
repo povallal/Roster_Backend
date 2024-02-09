@@ -34,8 +34,10 @@
 
   <ItemGroup>
     <None Remove="Data\" />
+    <None Remove="Controllers\Users\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
+    <Folder Include="Controllers\Users\" />
   </ItemGroup>
 </Project>

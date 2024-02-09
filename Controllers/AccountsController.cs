@@ -20,7 +20,7 @@ namespace rosterapi.Controllers
 {
     [ApiController]
     [Route("api/account")]
-    public class AccountController : ControllerBase
+    public class AccountsController : ControllerBase
     {
         private readonly UserManager<User> _userManager;
         private readonly SignInManager<User> _signInManager;
@@ -32,7 +32,7 @@ namespace rosterapi.Controllers
         private readonly RoleManager<IdentityRole<string>> _roleManager;
 
 
-        public AccountController(UserManager<User> userManager, SignInManager<User> signInManager, UserAuthDbContext dbContext, IConfiguration configuration, RoleManager<IdentityRole<string>> roleManager, UserAuthDbContext context)
+        public AccountsController(UserManager<User> userManager, SignInManager<User> signInManager, UserAuthDbContext dbContext, IConfiguration configuration, RoleManager<IdentityRole<string>> roleManager, UserAuthDbContext context)
         {
             _userManager = userManager;
             _signInManager = signInManager;

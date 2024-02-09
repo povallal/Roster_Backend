@@ -20,6 +20,8 @@ namespace rosterapi.Models
         public ICollection<Consultant> Consultants { get; set; }
         public ICollection<MedicalOfficer> MedicalOfficers { get; set; }
 
+        public ICollection<Group> Groups { get; set; }
+
     }
 }
 

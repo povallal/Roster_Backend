@@ -61,6 +61,14 @@ namespace rosterapi.Data
                 .WithMany(g => g.MedicalOfficers)
                 .HasForeignKey(mo => mo.GroupId)
                 .OnDelete(DeleteBehavior.Restrict);
+
+
+            // Group-Unit relationship
+            builder.Entity<Group>()
+                .HasOne(g => g.Unit)
+                .WithMany(u => u.Groups)
+                .HasForeignKey(g => g.UnitId)
+                .OnDelete(DeleteBehavior.Restrict);
         }
     }
 }

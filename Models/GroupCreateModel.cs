@@ -8,7 +8,9 @@ namespace rosterapi.Models
         [Required]
         public string Name { get; set; }
 
-       
+        public int UnitId { get; set; }  // Foreign key property
+
+
     }
 }
 
