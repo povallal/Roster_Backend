@@ -21,29 +21,32 @@ namespace rosterapi.Controllers.Users
         }
 
 
-        // Get all Chief Consultants
-        [HttpGet("medical-officers")]
-        public ActionResult<IEnumerable<MedicalOfficerResponse>> GetAllMedicalOfficers()
+
+        [HttpGet("all-medical-officers")]
+        public async Task<ActionResult<IEnumerable<MedicalOfficerResponse>>> GetAllMedicalOfficers()
         {
-            var Medicalofficers = _context.MedicalOfficers
-                .Include(c => c.Unit) // Include the related Unit
-                .ToList();
+            var medicalOfficers = await _context.MedicalOfficers
+                .Include(mo => mo.Group)
+                .Select(mo => new MedicalOfficerResponse
+                {
+                    Id = mo.Id,
+                    UserName = mo.UserName,
+                    Email = mo.Email,
+                    CreatedAt = mo.CreatedAt,
+                    UpdatedAt = mo.UpdatedAt,
+                    IsActive = mo.IsActive,
+                    GroupName = mo.Group.Name, // Assuming the Group entity has a Name property
+                })
+                .ToListAsync();
 
-            // Map ChiefConsultant entities to ChiefConsultantResponse objects
-            var MedicalOfficerResponses = Medicalofficers.Select(c => new MedicalOfficerResponse
+            if (!medicalOfficers.Any())
             {
-                Id = c.Id, // Populate the Id property
-                UserName = c.UserName,
-                Email = c.Email,
-                CreatedAt = c.CreatedAt,
-                UpdatedAt = c.UpdatedAt,
-                IsActive = c.IsActive,
-                UnitName = c.Unit != null ? c.Unit.Name : null,  // Check if Unit is not null before accessing its properties
-                //GroupId = (int)(c.Unit != null ? (c.Unit.Groups.FirstOrDefault()?.Id) : -1)
-            }).ToList();
+                return NotFound("No Medical Officers found.");
+            }
 
-            return Ok(MedicalOfficerResponses);
+            return Ok(medicalOfficers);
         }
+
 
     }
 }

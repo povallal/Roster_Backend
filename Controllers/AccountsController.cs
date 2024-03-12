@@ -10,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using rosterapi.Models;
-
 using rosterapi.Data;
 using System.Text;
 using System.Security.Cryptography;
@@ -94,9 +93,12 @@ namespace rosterapi.Controllers
 
 
 
+
         [HttpPost("chief-consultant-register")]
         public async Task<ActionResult<Response>> RegisterChiefConsultant([FromBody] ChiefConsultantRegisterModel model)
+
         {
+            Console.WriteLine("--------Chief consultant register called--------");
             var userExists = await _userManager.FindByEmailAsync(model.Email);
             if (userExists != null)
             {
@@ -110,7 +112,7 @@ namespace rosterapi.Controllers
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow,
                 IsActive = model.IsActive,
-                UnitId = model.UnitId // Assign the specified unit to the chief consultant
+            
             };
 
             var result = await _userManager.CreateAsync(chiefConsultant, model.Password);
@@ -144,6 +146,7 @@ namespace rosterapi.Controllers
 
 
 
+
         [HttpPost("consultant-register")]
         public async Task<ActionResult<Response>> RegisterConsultant([FromBody] ConsultantRegisterModel model)
         {
@@ -160,7 +163,7 @@ namespace rosterapi.Controllers
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow,
                 IsActive = model.IsActive,
-                UnitId = model.UnitId // Assign the specified unit to the consultant
+               
             };
 
         
@@ -197,6 +200,7 @@ namespace rosterapi.Controllers
 
 
 
+
         [HttpPost("medical-officer-register")]
         public async Task<ActionResult<Response>> RegisterMedicalOfficer([FromBody] MedicalOfficerRegisterModel model)
         {
@@ -213,7 +217,7 @@ namespace rosterapi.Controllers
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow,
                 IsActive = model.IsActive,
-                UnitId = model.UnitId, // Assign the specified unit to the medical officer
+              
                 GroupId = model.GroupId // Assign the specified group to the medical officer
             };
         
@@ -247,6 +251,7 @@ namespace rosterapi.Controllers
                 return BadRequest(new Response { Status = "Error", Message = "User creation failed.", Errors = result.Errors.ToList() });
             }
         }
+
 
 
 

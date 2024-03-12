@@ -17,6 +17,8 @@ namespace rosterapi.Controllers
             _context = context;
         }
 
+
+
         [HttpPost("create")]
         public async Task<ActionResult<Response>> CreateUnit([FromBody] UnitRegisterModel model)
         {
@@ -43,30 +45,33 @@ namespace rosterapi.Controllers
         }
 
 
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<UnitResponse>>> GetUnits()
+
+
+
+
+        [HttpGet("all-units")]
+        public async Task<ActionResult<IEnumerable<UnitResponse>>> GetAllUnits()
         {
-            // Retrieve all units from the database
             var units = await _context.Units
-                     .Select(u => new UnitResponse
-                     {
-                         Id = u.Id,
-                         Name = u.Name,
-                         CreatedAt = u.CreatedAt,
-                         UpdatedAt = u.UpdatedAt,
-                         ChiefConsultantName = u.ChiefConsultants != null && u.ChiefConsultants.Any() ? u.ChiefConsultants.First().UserName : null
-                     })
-                     .ToListAsync();
+                .Include(u => u.ChiefConsultant)
+                .Select(u => new UnitResponse
+                {
+                    Id = u.Id,
+                    Name = u.Name,
+                    CreatedAt = u.CreatedAt,
+                    UpdatedAt = u.UpdatedAt,
+                    ChiefConsultantName = u.ChiefConsultant != null ? u.ChiefConsultant.UserName : null
+                })
+                .ToListAsync();
 
-
-            // Check if units exist
-            if (units == null || units.Count == 0)
+            if (!units.Any())
             {
-                return NotFound(new Response { Status = "Error", Message = "No units found." });
+                return NotFound("No Units found.");
             }
 
             return Ok(units);
         }
+
 
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection.Emit;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -34,26 +35,15 @@ namespace rosterapi.Data
 
             // Define relationships
 
-            // ChiefConsultant-Unit relationship
+
+            // Configure the one-to-one relationship between Unit and ChiefConsultant
             builder.Entity<ChiefConsultant>()
-                .HasOne(cc => cc.Unit)
-                .WithMany(u => u.ChiefConsultants)
-                .HasForeignKey(cc => cc.UnitId)
-                .OnDelete(DeleteBehavior.Restrict);
+           .HasOne(cc => cc.Unit)
+           .WithOne(u => u.ChiefConsultant)
+           .HasForeignKey<ChiefConsultant>(cc => cc.UnitId)
+           .OnDelete(DeleteBehavior.Restrict);
 
-            // Consultant-Unit relationship
-            builder.Entity<Consultant>()
-                .HasOne(c => c.Unit)
-                .WithMany(u => u.Consultants)
-                .HasForeignKey(c => c.UnitId)
-                .OnDelete(DeleteBehavior.Restrict);
 
-            // MedicalOfficer-Unit relationship
-            builder.Entity<MedicalOfficer>()
-                .HasOne(mo => mo.Unit)
-                .WithMany(u => u.MedicalOfficers)
-                .HasForeignKey(mo => mo.UnitId)
-                .OnDelete(DeleteBehavior.Restrict);
 
             // MedicalOfficer-Group relationship
             builder.Entity<MedicalOfficer>()
@@ -63,12 +53,7 @@ namespace rosterapi.Data
                 .OnDelete(DeleteBehavior.Restrict);
 
 
-            // Group-Unit relationship
-            builder.Entity<Group>()
-                .HasOne(g => g.Unit)
-                .WithMany(u => u.Groups)
-                .HasForeignKey(g => g.UnitId)
-                .OnDelete(DeleteBehavior.Restrict);
+            
         }
     }
 }

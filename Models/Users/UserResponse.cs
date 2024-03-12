@@ -9,17 +9,21 @@ namespace rosterapi.Models
         public DateTimeOffset CreatedAt { get; set; }
         public DateTimeOffset UpdatedAt { get; set; }
         public bool IsActive { get; set; }
-        public string UnitName { get; set; }
+      
 
     }
 
+    public class ChiefConsultnatResponse : UserResponse
+    {
+        public string? UnitName { get; set; }
 
+    }
 
     public class MedicalOfficerResponse : UserResponse
     {
 
-        //public string GroupName { get; set; }
-     //   public int GroupId { get; set; }
+        public string GroupName { get; set; }
+        public int GroupId { get; set; }
 
 
     }

@@ -35,9 +35,15 @@
   <ItemGroup>
     <None Remove="Data\" />
     <None Remove="Controllers\Users\" />
+    <None Remove="Models\Users\" />
+    <None Remove="Models\Groups\" />
+    <None Remove="Models\Units\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
     <Folder Include="Controllers\Users\" />
+    <Folder Include="Models\Users\" />
+    <Folder Include="Models\Groups\" />
+    <Folder Include="Models\Units\" />
   </ItemGroup>
 </Project>

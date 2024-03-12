@@ -36,18 +36,18 @@ namespace rosterapi.Models
 
     public class ConsultantRegisterModel : RegisterModel
     {
-        public int UnitId { get; set; }
+        
     }
 
     public class ChiefConsultantRegisterModel : RegisterModel
     {
-        public int UnitId { get; set; }
+      
     }
 
     public class MedicalOfficerRegisterModel : RegisterModel
     {
-        public int UnitId { get; set; }
-        public int GroupId { get; set; }
+        
+         public int GroupId { get; set; }
     }
 
 }

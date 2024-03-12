@@ -18,23 +18,24 @@ namespace rosterapi.Controllers
                 _context = context;
             }
 
+
             [HttpPost("create")]
             public async Task<ActionResult<Response>> CreateGroup([FromBody] GroupCreateModel model)
             {
 
-                    if (_context.Groups.Any(g => g.Name == model.Name && g.UnitId == model.UnitId))
+                    if (_context.Groups.Any(g => g.Name == model.Name ))
                     {
                         return BadRequest(new Response { Status = "Error", Message = "Group with this name and unit ID already exists." });
                     }
 
 
-            var group = new Group
+                 var group = new Group
                 {
                        Name = model.Name,
                     // Add other properties as needed
                     CreatedAt = DateTimeOffset.UtcNow,
                     UpdatedAt = DateTimeOffset.UtcNow,
-                    UnitId = model.UnitId
+                    //UnitId = model.UnitId
                 };
 
                 _context.Groups.Add(group);
@@ -44,26 +45,22 @@ namespace rosterapi.Controllers
             }
 
 
-            [HttpGet]
-            public async Task<ActionResult<IEnumerable<GroupResponse>>> GetGroups()
+            [HttpGet("all-groups")]
+            public async Task<ActionResult<IEnumerable<GroupResponse>>> GetAllGroups()
             {
-                // Retrieve all groups from the database
                 var groups = await _context.Groups
-                             .Select(g => new GroupResponse
-                             {
-                                 Id = g.Id,
-                                 Name = g.Name,
-                                 CreatedAt = g.CreatedAt,
-                                 UpdatedAt = g.UpdatedAt,
-                                 // Add any additional properties as needed
-                                 UnitName = g.Unit != null ? g.Unit.Name : null
-                             })
-                             .ToListAsync();
+                    .Select(g => new GroupResponse
+                    {
+                        Id = g.Id,
+                        Name = g.Name,
+                        CreatedAt = g.CreatedAt,
+                        UpdatedAt = g.UpdatedAt
+                    })
+                    .ToListAsync();
 
-                // Check if groups exist
-                if (groups == null || groups.Count == 0)
+                if (!groups.Any())
                 {
-                    return NotFound(new Response { Status = "Error", Message = "No groups found." });
+                    return NotFound("No Groups found.");
                 }
 
                 return Ok(groups);

@@ -15,13 +15,9 @@ namespace rosterapi.Models
         public DateTimeOffset UpdatedAt { get; set; }
 
 
-        // Each Unit can have many ChiefConsultants, Consultants, and MedicalOfficers
-        public ICollection<ChiefConsultant> ChiefConsultants { get; set; }
-        public ICollection<Consultant> Consultants { get; set; }
-        public ICollection<MedicalOfficer> MedicalOfficers { get; set; }
 
-        public ICollection<Group> Groups { get; set; }
-
+        // Define a navigation property for a one-to-one relationship
+        public ChiefConsultant ChiefConsultant { get; set; }
     }
 }
 

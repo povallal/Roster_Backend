@@ -3,13 +3,15 @@ using System.ComponentModel.DataAnnotations;
 
 namespace rosterapi.Models
 {
-	public class GroupCreateModel
+	public class UnitRegisterModel
 	{
+
+       
+
         [Required]
         public string Name { get; set; }
 
-        public int UnitId { get; set; }  // Foreign key property
-
+       
 
     }
 }

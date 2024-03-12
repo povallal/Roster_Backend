@@ -12,7 +12,7 @@ using rosterapi.Data;
 namespace rosterapi.Migrations
 {
     [DbContext(typeof(UserAuthDbContext))]
-    [Migration("20240207171235_userauth")]
+    [Migration("20240312074255_userauth")]
     partial class userauth
     {
         /// <inheritdoc />
@@ -323,16 +323,13 @@ namespace rosterapi.Migrations
                 {
                     b.HasBaseType("rosterapi.Models.User");
 
-                    b.Property<int>("UnitId")
+                    b.Property<int?>("UnitId")
+                        .IsRequired()
                         .HasColumnType("int");
 
-                    b.HasIndex("UnitId");
-
-                    b.ToTable("AspNetUsers", t =>
-                        {
-                            t.Property("UnitId")
-                                .HasColumnName("ChiefConsultant_UnitId");
-                        });
+                    b.HasIndex("UnitId")
+                        .IsUnique()
+                        .HasFilter("[UnitId] IS NOT NULL");
 
                     b.HasDiscriminator().HasValue("ChiefConsultant");
                 });
@@ -340,17 +337,6 @@ namespace rosterapi.Migrations
             modelBuilder.Entity("rosterapi.Models.Consultant", b =>
                 {
                     b.HasBaseType("rosterapi.Models.User");
-
-                    b.Property<int>("UnitId")
-                        .HasColumnType("int");
-
-                    b.HasIndex("UnitId");
-
-                    b.ToTable("AspNetUsers", t =>
-                        {
-                            t.Property("UnitId")
-                                .HasColumnName("Consultant_UnitId");
-                        });
 
                     b.HasDiscriminator().HasValue("Consultant");
                 });
@@ -362,12 +348,7 @@ namespace rosterapi.Migrations
                     b.Property<int>("GroupId")
                         .HasColumnType("int");
 
-                    b.Property<int>("UnitId")
-                        .HasColumnType("int");
-
                     b.HasIndex("GroupId");
-
-                    b.HasIndex("UnitId");
 
                     b.HasDiscriminator().HasValue("MedicalOfficer");
                 });
@@ -426,19 +407,8 @@ namespace rosterapi.Migrations
             modelBuilder.Entity("rosterapi.Models.ChiefConsultant", b =>
                 {
                     b.HasOne("rosterapi.Models.Unit", "Unit")
-                        .WithMany("ChiefConsultants")
-                        .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Unit");
-                });
-
-            modelBuilder.Entity("rosterapi.Models.Consultant", b =>
-                {
-                    b.HasOne("rosterapi.Models.Unit", "Unit")
-                        .WithMany("Consultants")
-                        .HasForeignKey("UnitId")
+                        .WithOne("ChiefConsultant")
+                        .HasForeignKey("rosterapi.Models.ChiefConsultant", "UnitId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
@@ -453,15 +423,7 @@ namespace rosterapi.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("rosterapi.Models.Unit", "Unit")
-                        .WithMany("MedicalOfficers")
-                        .HasForeignKey("UnitId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
                     b.Navigation("Group");
-
-                    b.Navigation("Unit");
                 });
 
             modelBuilder.Entity("rosterapi.Models.Group", b =>
@@ -471,11 +433,8 @@ namespace rosterapi.Migrations
 
             modelBuilder.Entity("rosterapi.Models.Unit", b =>
                 {
-                    b.Navigation("ChiefConsultants");
-
-                    b.Navigation("Consultants");
-
-                    b.Navigation("MedicalOfficers");
+                    b.Navigation("ChiefConsultant")
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

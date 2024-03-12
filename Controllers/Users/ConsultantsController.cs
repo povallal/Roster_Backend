@@ -21,28 +21,30 @@ namespace rosterapi.Controllers.Users
         }
 
 
-        // Get all Chief Consultants
-        [HttpGet("consultants")]
-        public ActionResult<IEnumerable<UserResponse>> GetAllConsultants()
+
+        [HttpGet("all-consultants")]
+        public async Task<ActionResult<IEnumerable<UserResponse>>> GetAllConsultants()
         {
-            var Consultants = _context.Consultants
-                .Include(c => c.Unit) // Include the related Unit
-                .ToList();
+            var consultants = await _context.Consultants
+                .Select(c => new UserResponse
+                {
+                    Id = c.Id,
+                    UserName = c.UserName,
+                    Email = c.Email,
+                    CreatedAt = c.CreatedAt,
+                    UpdatedAt = c.UpdatedAt,
+                    IsActive = c.IsActive
+                })
+                .ToListAsync();
 
-            // Map ChiefConsultant entities to ChiefConsultantResponse objects
-            var ConsultantResponses = Consultants.Select(c => new UserResponse
+            if (!consultants.Any())
             {
-                Id = c.Id, // Populate the Id property
-                UserName = c.UserName,
-                Email = c.Email,
-                CreatedAt = c.CreatedAt,
-                UpdatedAt = c.UpdatedAt,
-                IsActive = c.IsActive,
-                UnitName = c.Unit != null ? c.Unit.Name : null // Check if Unit is not null before accessing its properties
-            }).ToList();
+                return NotFound("No Consultants found.");
+            }
 
-            return Ok(ConsultantResponses);
+            return Ok(consultants);
         }
+
 
     }
 }

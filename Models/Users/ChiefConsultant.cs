@@ -7,7 +7,7 @@ namespace rosterapi.Models
        
         public Unit Unit { get; set; }
 
-        public int UnitId { get; set; }  // Foreign key property
+        public int? UnitId { get; set; }  // Foreign key property
 
     }
 }

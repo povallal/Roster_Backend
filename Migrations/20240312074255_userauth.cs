@@ -87,8 +87,6 @@ namespace rosterapi.Migrations
                     UpdatedAt = table.Column<DateTimeOffset>(type: "datetimeoffset", nullable: false),
                     IsActive = table.Column<bool>(type: "bit", nullable: false),
                     Discriminator = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    ChiefConsultant_UnitId = table.Column<int>(type: "int", nullable: true),
-                    Consultant_UnitId = table.Column<int>(type: "int", nullable: true),
                     UnitId = table.Column<int>(type: "int", nullable: true),
                     GroupId = table.Column<int>(type: "int", nullable: true),
                     UserName = table.Column<string>(type: "nvarchar(256)", maxLength: 256, nullable: true),
@@ -113,18 +111,6 @@ namespace rosterapi.Migrations
                         name: "FK_AspNetUsers_Groups_GroupId",
                         column: x => x.GroupId,
                         principalTable: "Groups",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Units_ChiefConsultant_UnitId",
-                        column: x => x.ChiefConsultant_UnitId,
-                        principalTable: "Units",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_AspNetUsers_Units_Consultant_UnitId",
-                        column: x => x.Consultant_UnitId,
-                        principalTable: "Units",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
@@ -264,16 +250,6 @@ namespace rosterapi.Migrations
                 column: "NormalizedEmail");
 
             migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_ChiefConsultant_UnitId",
-                table: "AspNetUsers",
-                column: "ChiefConsultant_UnitId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_AspNetUsers_Consultant_UnitId",
-                table: "AspNetUsers",
-                column: "Consultant_UnitId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_GroupId",
                 table: "AspNetUsers",
                 column: "GroupId");
@@ -281,7 +257,9 @@ namespace rosterapi.Migrations
             migrationBuilder.CreateIndex(
                 name: "IX_AspNetUsers_UnitId",
                 table: "AspNetUsers",
-                column: "UnitId");
+                column: "UnitId",
+                unique: true,
+                filter: "[UnitId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "UserNameIndex",
