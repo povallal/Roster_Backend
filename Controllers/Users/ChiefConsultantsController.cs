@@ -54,6 +54,7 @@ namespace rosterapi.Controllers.Users
         [HttpGet("all-chief-consultants")]
         public async Task<ActionResult<IEnumerable<ChiefConsultnatResponse>>> GetAllChiefConsultants()
         {
+            Console.WriteLine("Get all cheif consultant called");
             var chiefConsultants = await _context.ChiefConsultants.Include(cc => cc.Unit)
                 .Select(cc => new ChiefConsultnatResponse
                 {

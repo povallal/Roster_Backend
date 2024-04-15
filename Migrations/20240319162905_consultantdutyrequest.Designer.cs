@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using rosterapi.Data;
 
@@ -11,9 +12,11 @@ using rosterapi.Data;
 namespace rosterapi.Migrations
 {
     [DbContext(typeof(UserAuthDbContext))]
-    partial class UserAuthDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240319162905_consultantdutyrequest")]
+    partial class consultantdutyrequest
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

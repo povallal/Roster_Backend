@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using rosterapi.Models;
+using rosterapi.Models.Duty;
 
 namespace rosterapi.Data
 {
@@ -20,6 +21,7 @@ namespace rosterapi.Data
         public DbSet<MedicalOfficer> MedicalOfficers { get; set; }
         public DbSet<Unit> Units { get; set; }
         public DbSet<Group> Groups { get; set; }
+        public DbSet<ConsultantDutyRequest> ConsultantDutyRequests { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

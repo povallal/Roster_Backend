@@ -1,19 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
+﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Authorization;
+using System.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using rosterapi.Models;
 using rosterapi.Data;
-using System.Text;
-using System.Security.Cryptography;
-using System.Reflection.Metadata;
+using rosterapi.Models;
 
 namespace rosterapi.Controllers
 {
@@ -41,6 +33,7 @@ namespace rosterapi.Controllers
             _context = context;
 
         }
+        
 
         [HttpPost("admin-register")]
         public async Task<ActionResult<Response>> RegisterAdmin([FromBody] RegisterModel model)
@@ -112,7 +105,8 @@ namespace rosterapi.Controllers
                 CreatedAt = DateTimeOffset.UtcNow,
                 UpdatedAt = DateTimeOffset.UtcNow,
                 IsActive = model.IsActive,
-            
+                UnitId = model.UnitId
+
             };
 
             var result = await _userManager.CreateAsync(chiefConsultant, model.Password);
@@ -147,6 +141,8 @@ namespace rosterapi.Controllers
 
 
 
+
+
         [HttpPost("consultant-register")]
         public async Task<ActionResult<Response>> RegisterConsultant([FromBody] ConsultantRegisterModel model)
         {
@@ -165,8 +161,6 @@ namespace rosterapi.Controllers
                 IsActive = model.IsActive,
                
             };
-
-        
 
             var result = await _userManager.CreateAsync(consultant, model.Password);
             if (result.Succeeded)
@@ -197,6 +191,7 @@ namespace rosterapi.Controllers
                 return BadRequest(new Response { Status = "Error", Message = "User creation failed.", Errors = result.Errors.ToList() });
             }
         }
+
 
 
 
@@ -270,10 +265,20 @@ namespace rosterapi.Controllers
                 return BadRequest(new Response { Status = "Error", Message = "Invalid Password." });
             }
 
-            var userRoles = await _userManager.GetRolesAsync(user);
-            var userRole = userRoles.FirstOrDefault();
+            //var userRoles = await _userManager.GetRolesAsync(user);
+            //_ = userRoles.FirstOrDefault();
 
-            Console.WriteLine("The Role for this user", userRole);
+            //Console.WriteLine("The Role for this user", userRoles);
+
+            var userRoles = await _userManager.GetRolesAsync(user);
+            Console.WriteLine("Roles for this user: " + string.Join(", ", userRoles));
+
+            // Use the roles as needed
+            if (!userRoles.Any())
+            {
+                Console.WriteLine("No roles found for this user.");
+            }
+
 
             var claims = new List<Claim>
             {
@@ -303,6 +308,7 @@ namespace rosterapi.Controllers
 
             return Ok(new Response { Status = "Success", Message = jwtToken });
         }
+
 
 
 

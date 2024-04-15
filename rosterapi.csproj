@@ -38,6 +38,7 @@
     <None Remove="Models\Users\" />
     <None Remove="Models\Groups\" />
     <None Remove="Models\Units\" />
+    <None Remove="Models\Duty\" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Data\" />
@@ -45,5 +46,6 @@
     <Folder Include="Models\Users\" />
     <Folder Include="Models\Groups\" />
     <Folder Include="Models\Units\" />
+    <Folder Include="Models\Duty\" />
   </ItemGroup>
 </Project>
